@@ -18,26 +18,27 @@
 import pandas as pd
 
 class Scanner:
-	#Variables:
 	#Ticker input
 	company = 'AAPL'
+	
+	#--Statistics page--
 	#URL to pull data from
-	dataSource = f'https://finance.yahoo.com/quote/{company}/key-statistics?p={company}'
+	dataSourceStats = f'https://finance.yahoo.com/quote/{company}/key-statistics?p={company}'
 	#read_html from selected dataSource URL using Pandas
-	df = pd.read_html(dataSource)
+	df1 = pd.read_html(dataSourceStats)
 	
 	#Data frames separated
-	valuationMeasures = df[0]
-	stockPriceHistory = df[1]
-	shareStatistics = df[2]
-	dividendInfo = df[3]
-	profitabilityInfo = df[5]
-	managementEfectiveness = df[6]
-	incomeStatement = df[7]
-	balanceSheet = df[8]
-	cashFlow = df[9]
+	valuationMeasures = df1[0]
+	stockPriceHistory = df1[1]
+	shareStatistics = df1[2]
+	dividendInfo = df1[3]
+	profitabilityInfo = df1[5]
+	managementEfectiveness = df1[6]
+	incomeStatement = df1[7]
+	balanceSheet = df1[8]
+	cashFlow = df1[9]
 
-	#Individual output selections
+	#Individual row output selections
 	FiftyDMovAvg = stockPriceHistory.filter(like = '5', axis=0)
 
 	print(FiftyDMovAvg)
