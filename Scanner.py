@@ -3,7 +3,8 @@
 #Date: 02/29/2021
 #Purpose:	
 # Provide a basic scanner that accepts a ticker input
-# and returns the following:
+# and returns the following information:
+# 1.) - Key Statistics -
 #	- previous close 
 # 	- previous open
 # 	- days range
@@ -13,7 +14,11 @@
 # 	- mkt cap
 # 	- 5y monthly beta
 # 	- next earnings date
-
+# 2.) - Financial Information -
+#	- Income Statement
+#	- Balance Sheet
+#	- Cash Flow Statement
+#	- Key Metric Ratios 
 #import modules
 import pandas as pd
 
