@@ -3,8 +3,7 @@
 #Date: 02/29/2021
 #Purpose:	
 # Provide a basic scanner that accepts a ticker input
-# and returns the following information:
-# 1.) - Key Statistics -
+# and returns the following:
 #	- previous close 
 # 	- previous open
 # 	- days range
@@ -14,20 +13,16 @@
 # 	- mkt cap
 # 	- 5y monthly beta
 # 	- next earnings date
-# 2.) - Financial Information -
-#	- Income Statement
-#	- Balance Sheet
-#	- Cash Flow Statement
-#	- Key Metric Ratios 
+
 #import modules
 import pandas as pd
 
 class Scanner:
 	
 	# function that generates keystatistical information on a user inputed ticker
-	def statistics	
+	def statistics():
 		#Ticker input
-		company = input('Enter Company Ticker Symbol')
+		company = input('Enter Company Ticker Symbol: ')
 		
 		#--Statistics page--
 		#URL to pull data from
@@ -55,14 +50,23 @@ class Scanner:
 		#Export results to excel
 		valuationMeasures.to_excel('test.xlsx')
 
-	def financials
+	#statistics()
+
+	def financials():
 	#User Ticker Input
-		company1 = input('Enter Company Ticker Symbol')
+		company = input('Enter Company Ticker Symbol: ')
 
 		#--Financials Page--
-		datasourceFinancials = f'https://finance.yahoo.com/quote/{company1}/financials?p={company1}'
+		datasourceFinancials = f'https://finance.yahoo.com/quote/{company}/financials?p={company}'
 
 		#scrapes the html from the user inputed datasource  financial search query
 		df2 = pd.read_html(datasourceFinancials)
 
+		#Data frames separated
+		valuationMeasures = df1[0]
+		stockPriceHistory = df1[1]
+
+		print (stockPriceHistory)
+
+	financials()
 #End of Scanner class
