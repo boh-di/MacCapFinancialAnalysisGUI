@@ -81,11 +81,15 @@ def scrape_table(url):
     assert len(table_rows) > 0
     
     df = parse_rows(table_rows)
-    df = clean_data(df)
+    #df = clean_data(df)
     
     #Individual row output selections
-    grossProfit = df.filter(like = '3', axis=0)
-    return grossProfit
+    #Keyword search in row
+    grossProfit = 'Gross Profit'
+    #selectOutput var = dataframe.locate[df column 0] and row equals grossProfit var
+    selectOutput = df.loc[df[0] == grossProfit]
+    #return output
+    return selectOutput
 
 symbol = 'AAPL'
 print(scrape_table('https://finance.yahoo.com/quote/' + symbol + '/financials?p=' + symbol))
