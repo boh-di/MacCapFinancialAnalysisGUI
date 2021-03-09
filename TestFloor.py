@@ -49,21 +49,6 @@ def parse_rows(table_rows):
             
     return pd.DataFrame(parsed_rows)
 
-def clean_data(df):
-    df = df.set_index(0) # Set the index to the first column: 'Period Ending'.
-    df = df.transpose() # Transpose the DataFrame, so that our header contains the account names
-    
-    # Rename the "Breakdown" column to "Date"
-    cols = list(df.columns)
-    cols[0] = 'Date'
-    df = df.set_axis(cols, axis='columns', inplace=False)
-    
-    for column_index in range(1, len(df.columns)): # Take all columns, except the first (which is the 'Date' column)
-        df.iloc[:,column_index] = df.iloc[:,column_index].str.replace(',', '') # Remove the thousands separator
-        df.iloc[:,column_index] = df.iloc[:,column_index].astype(np.float64) # Convert the column to float64
-        
-    return df
-
 def scrape_table(url):
     # Fetch the page that we're going to parse
     page = get_page(url)
@@ -81,7 +66,6 @@ def scrape_table(url):
     assert len(table_rows) > 0
     
     df = parse_rows(table_rows)
-    #df = clean_data(df)
     
     #Individual row output selections
     #Keyword search in row
