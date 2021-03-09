@@ -58,8 +58,6 @@ def clean_data(df):
     cols[0] = 'Date'
     df = df.set_axis(cols, axis='columns', inplace=False)
     
-    numeric_columns = list(df.columns)[1::] # Take all columns, except the first (which is the 'Date' column)
-
     for column_index in range(1, len(df.columns)): # Take all columns, except the first (which is the 'Date' column)
         df.iloc[:,column_index] = df.iloc[:,column_index].str.replace(',', '') # Remove the thousands separator
         df.iloc[:,column_index] = df.iloc[:,column_index].astype(np.float64) # Convert the column to float64
@@ -68,7 +66,7 @@ def clean_data(df):
 
 def scrape_table(url):
     # Fetch the page that we're going to parse
-    page = get_page(url);
+    page = get_page(url)
 
     # Parse the page with LXML, so that we can start doing some XPATH queries
     # to extract the data that we want
