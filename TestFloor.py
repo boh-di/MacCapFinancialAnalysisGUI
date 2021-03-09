@@ -66,12 +66,14 @@ def scrape_table(url):
     assert len(table_rows) > 0
     
     df = parse_rows(table_rows)
+    #Make row 0 the column names when displayed/queried
+    df.columns = df.iloc[0]
     
     #Individual row output selections
     #Keyword search in row
     grossProfit = 'Gross Profit'
-    #selectOutput var = dataframe.locate[df column 0] and row equals grossProfit var
-    selectOutput = df.loc[df[0] == grossProfit]
+    #selectOutput var = dataframe.locate[df column name] and row equals grossProfit var
+    selectOutput = df.loc[df['Breakdown'] == grossProfit]
     #return output
     return selectOutput
 
