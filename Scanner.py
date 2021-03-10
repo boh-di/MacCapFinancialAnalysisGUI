@@ -15,58 +15,90 @@
 # 	- next earnings date
 
 #import modules
+#import modules
+from datetime import datetime
+import lxml
+from lxml import html
+import requests
+import numpy as np
 import pandas as pd
 
 class Scanner:
+	# Set up the request headers that we're going to use, to simulate
+	# a request by the Chrome browser. Simulating a request from a browser
+	# is generally good practice when building a scraper
+	def getPage(self, url):
+		headers = {
+			'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+			'Accept-Encoding': 'gzip, deflate, br',
+			'Accept-Language': 'en-US,en;q=0.9',
+			'Cache-Control': 'max-age=0',
+			'Pragma': 'no-cache',
+			'Referrer': 'https://google.com',
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36'
+		}
+
+		return requests.get(url, headers=headers)
+
+	#Parse rows
+	def parseRows(self, tableRows):
+		parsedRows = []
+
+		for tableRow in tableRows:
+			parsedRow = []
+			el = tableRow.xpath("./div")
+
+			noneCount = 0
+
+			for rs in el:
+				try:
+					(text,) = rs.xpath('.//span/text()[1]')
+					parsedRow.append(text)
+				except ValueError:
+					parsedRow.append(np.NaN)
+					noneCount += 1
+
+			if (noneCount < 4):
+				parsedRows.append(parsedRow)
+				
+		return pd.DataFrame(parsedRows)
+
+	#Individual row output selections
+	def findItem(self, dataFrame, item, column):
+		#selectOutput var = dataframe.locate[df column name] and row equals grossProfit var
+		selectOutput = dataFrame.loc[dataFrame[column] == item]
+
+		return selectOutput
 	
-	# function that generates keystatistical information on a user inputed ticker
-	def statistics():
-		#Ticker input
-		company = input('Enter Company Ticker Symbol: ')
+	#Scrape specified table
+	def scrapeTable(self, url):
+		# Fetch the page that we're going to parse
+		page = self.getPage(url)
+
+		# Parse the page with LXML, so that we can start doing some XPATH queries
+		# to extract the data that we want
+		tree = html.fromstring(page.content)
+
+		# Fetch all div elements which have class 'D(tbr)'
+		tableRows = tree.xpath("//div[contains(@class, 'D(tbr)')]")
 		
-		#--Statistics page--
-		#URL to pull data from
-		dataSourceStats = f'https://finance.yahoo.com/quote/{company}/key-statistics?p={company}'
+		# Ensure that some table rows are found; if none are found, then it's possible
+		# that Yahoo Finance has changed their page layout, or have detected
+		# that you're scraping the page.
+		assert len(tableRows) > 0
 		
-		#read_html from selected dataSource URL using Pandas
-		df1 = pd.read_html(dataSourceStats)
-		
-		#Data frames separated
-		valuationMeasures = df1[0]
-		stockPriceHistory = df1[1]
-		shareStatistics = df1[2]
-		dividendInfo = df1[3]
-		profitabilityInfo = df1[5]
-		managementEfectiveness = df1[6]
-		incomeStatement = df1[7]
-		balanceSheet = df1[8]
-		cashFlow = df1[9]
+		df = self.parseRows(tableRows)
+		#Make row 0 the column names when displayed/queried
+		df.columns = df.iloc[0]
 
-		#Individual row output selections
-		FiftyDMovAvg = stockPriceHistory.filter(like = '5', axis=0)
-
-		print(FiftyDMovAvg)
-		
-		#Export results to excel
-		valuationMeasures.to_excel('test.xlsx')
-
-	#statistics()
-
-	def financials():
-	#User Ticker Input
-		company = input('Enter Company Ticker Symbol: ')
-
-		#--Financials Page--
-		datasourceFinancials = f'https://finance.yahoo.com/quote/{company}/financials?p={company}'
-
-		#scrapes the html from the user inputed datasource  financial search query
-		df2 = pd.read_html(datasourceFinancials)
-
-		#Data frames separated
-		valuationMeasures = df1[0]
-		stockPriceHistory = df1[1]
-
-		print (stockPriceHistory)
-
-	financials()
+		#return output
+		return df
 #End of Scanner class
+
+if __name__ == "__main__":
+	#Scanner class run as var
+	scannerObj = Scanner()
+	#Symbol
+	symbol = 'AAPL'
+	#Output findItem(scrapeTable - gets df, item to find, column item is found in)
+	print(scannerObj.findItem(scannerObj.scrapeTable('https://finance.yahoo.com/quote/' + symbol + '/financials?p=' + symbol), 'Gross Profit', 'Breakdown'))
